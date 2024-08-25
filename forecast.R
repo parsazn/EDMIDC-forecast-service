@@ -3,17 +3,17 @@ library(forecast)
 library(tidyverse)
 library(lubridate)
 
-# Load the data from the CSV file
-data <- read.csv("path_to_your_csv_file.csv")
+# Load the data from the CSV file, skipping the annotated lines
+data <- read.csv("/Users/parsazn/Documents/TFG/Data-Collection-Services/EDMIDC-forecast-service/results.csv", comment.char = "#", skip = 3)
 
-# Convert createdDate to POSIXct format to handle date and time
-data$createdDate <- as.POSIXct(data$createdDate, format="%Y-%m-%d %H:%M:%S")
+# Convert _time to POSIXct format to handle date and time
+data$createdDate <- as.POSIXct(data$`X_time`, format="%Y-%m-%dT%H:%M:%OSZ")
 
 # Ensure that the data is sorted by date and time
 data <- data %>% arrange(createdDate)
 
 # Create a time series object for the ARIMA model with 5-minute intervals
-ts_data <- ts(data$price, frequency = 288)  # 288 intervals per day (5-minute intervals)
+ts_data <- ts(data$`X_value`, frequency = 288)  # 288 intervals per day (5-minute intervals)
 
 # Fit the ARIMA model
 arima_model <- auto.arima(ts_data)
